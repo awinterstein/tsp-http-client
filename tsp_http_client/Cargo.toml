@@ -1,0 +1,23 @@
+[package]
+name = "tsp-http-client"
+description = "A simple HTTP client for requesting timestamps from a timestamp authority (TSA) using the RFC 3161 standard."
+categories = ["finance", "cryptography"]
+keywords = ["time-stamp", "tsp", "rfc3161", "freelance"]
+license = "MPL-2.0"
+version = "0.1.0"
+edition = "2024"
+authors = ["Adrian Winterstein <adrian@winterstein.biz>"]
+repository = "https://codeberg.org/winterstein/tsp-http-client"
+exclude = ["README.tpl"]
+
+
+[dependencies]
+chrono = "0.4.41"
+cmpv2 = "0.2.0"
+cms = "0.2.3"
+der = "0.7.10"
+hex = "0.4.3"
+rand = "0.9.1"
+spki = "0.7.3"
+ureq = "3.0.11"
+x509-tsp = "0.1.0"
