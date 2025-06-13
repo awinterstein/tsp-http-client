@@ -9,4 +9,5 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Function to retrieve a timestamp from a timestamp authority for a given digest
+- Function to calculate digest and then receive timestamp from a timestamp authority
 - Return the timestamp authority response in ASN.1 DER encoded format

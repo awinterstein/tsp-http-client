@@ -1,8 +1,11 @@
 //! A simple HTTP client for requesting timestamps from a timestamp authority (TSA) using the [RFC 3161](https://www.rfc-editor.org/rfc/rfc3161.html) standard.
 //!
-//! # Example
+//! # Examples
+//!
+//! The following code can be used, if you already have a SHA digest of the data you want to timestamp:
+//!
 //! ```rust
-//! use tsp_http_client::request_timestamp;
+//! use tsp_http_client::request_timestamp_for_digest;
 //! # use std::fs::File;
 //! # use std::io::prelude::*;
 //!
@@ -14,7 +17,33 @@
 //! let digest = "00e3261a6e0d79c329445acd540fb2b07187a0dcf6017065c8814010283ac67f";
 //!
 //! // Request a timestamp for the given digest from the TSA (retrieving a TimeStampResponse object).
-//! let timestamp = request_timestamp(tsa_uri, digest)?;
+//! let timestamp = request_timestamp_for_digest(tsa_uri, digest)?;
+//!
+//! // The content of the timestamp response can be written to a file then for example.
+//! File::create("timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
+//!
+//! // Or the date and time of the timestamp can be accessed.
+//! println!("Timestamped date and time: {}", timestamp.datetime()?);
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! Alternatively, the crate can calculate the digest on the content of a file:
+//!
+//! ```rust
+//! use tsp_http_client::request_timestamp_for_file;
+//! # use std::fs::File;
+//! # use std::io::prelude::*;
+//!
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! // The URI of a timestamp authority (TSA) that supports RFC 3161 timestamps.
+//! let tsa_uri = "http://timestamp.sectigo.com/qualified";
+//!
+//! // The file that should be timestamped.
+//! let filename = "README.md";
+//!
+//! // Request a timestamp for the given digest from the TSA (retrieving a TimeStampResponse object).
+//! let timestamp = request_timestamp_for_file(tsa_uri, filename)?;
 //!
 //! // The content of the timestamp response can be written to a file then for example.
 //! File::create("timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
@@ -37,6 +66,8 @@
 
 mod tsp;
 
+use sha2::{self, Digest};
+use std::{fs::File, io::Read};
 use tsp::TimeStampRequest;
 pub use tsp::TimeStampResponse;
 
@@ -92,13 +123,44 @@ impl std::fmt::Display for Error {
 ///
 /// * `tsa_uri`: The URI of the timestamp authority.
 /// * `digest`: The SHA-224, SHA-256, SHA-384, or SHA-512 digest of the data to be timestamped, represented as a hexadecimal string.
-pub fn request_timestamp(
+pub fn request_timestamp_for_digest(
     tsa_uri: &str,
     digest: &str,
 ) -> Result<TimeStampResponse, Box<dyn std::error::Error>> {
     // Create a timestamp request for the given digest.
     let data = hex::decode(digest).or(Err(Error::InvalidDigest))?;
-    let timestamp_request = TimeStampRequest::new(data)?;
+    request_timestamp(tsa_uri, data)
+}
+
+/// Requests a timestamp for the given file from the specified URI of a timestamp authority (TSA).
+///
+/// A SHA-256 digest is calculated on the file content and the timestamp is then requested for this digest.
+///
+/// * `tsa_uri`: The URI of the timestamp authority.
+/// * `filename`: The filename (including relative or absolute path) for which the timestamp should be requested.
+pub fn request_timestamp_for_file(
+    tsa_uri: &str,
+    filename: &str,
+) -> Result<TimeStampResponse, Box<dyn std::error::Error>> {
+    let mut file = File::open(filename)?;
+    let mut file_content = vec![];
+    file.read_to_end(&mut file_content)?;
+
+    let digest = sha2::Sha256::digest(file_content);
+    request_timestamp(tsa_uri, digest.to_vec())
+}
+
+/// Internal helper function that does the actual requesting of a timestamp based on a digest.
+///
+/// It contains the common code for the two external functions to request a timestamp for a digest or for a file.
+///
+/// * `tsa_uri`: The URI of the timestamp authority.
+/// * `digest`: The SHA-224, SHA-256, SHA-384, or SHA-512 digest of the data to be timestamped, represented as an array of bytes.
+fn request_timestamp(
+    tsa_uri: &str,
+    digest: Vec<u8>,
+) -> Result<TimeStampResponse, Box<dyn std::error::Error>> {
+    let timestamp_request = TimeStampRequest::new(digest)?;
 
     let body = ureq::post(tsa_uri)
         .header("Content-Type", "application/timestamp-query")
