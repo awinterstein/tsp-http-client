@@ -6,8 +6,16 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.0] - 2025-06-04
+
 ### Added
 
-- Function to retrieve a timestamp from a timestamp authority for a given digest
-- Function to calculate digest and then receive timestamp from a timestamp authority
-- Return the timestamp authority response in ASN.1 DER encoded format
+- Creation of minimal valid XRechnung files in the UBL format
+- Calculation of invoice sums and taxes from given hourly work
+- Configuration of byers and seller via TOML file
+
+## [0.0.1] - 2025-06-03
+
+### Added
+
+- Aha!
