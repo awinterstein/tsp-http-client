@@ -20,8 +20,8 @@ jobs:
       - name: Publish command-line application
         uses: actions/upload-artifact@v4
         with:
-          name: tsp_http_client_cmd
-          path: target/release/tsp_http_client_cmd
+          name: tsp-http-client-cmd
+          path: target/release/tsp-http-client-cmd
       - name: Test the workspace
         run: cargo test --verbose
       - name: Check for up-to-date readme

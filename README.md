@@ -63,7 +63,7 @@ This repository also contains a command line application for requesting timestam
 ```
 Simple HTTP client for requesting timestamps from a timestamp authority (TSA) using the RFC 3161 standard
 
-Usage: tsp_http_client_cmd --output <OUTPUT> <--file <FILE>|--digest <DIGEST>>
+Usage: tsp-http-client-cmd --output <OUTPUT> <--file <FILE>|--digest <DIGEST>>
 
 Options:
   -f, --file <FILE>      The filename of the data that should be timestamped. Either this or --digest is needed

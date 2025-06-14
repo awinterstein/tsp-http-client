@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["tsp_http_client", "tsp_http_client_cmd"]
+members = ["tsp-http-client", "tsp-http-client-cmd"]
 
 [workspace.metadata.release]
 consolidate-commits = false

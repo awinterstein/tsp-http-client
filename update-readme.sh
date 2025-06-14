@@ -6,7 +6,7 @@ cd "$(dirname "$0")" # Make sure to be in the directory where the script is loca
 if ! cargo --list | grep -q readme; then cargo install cargo-readme; fi
 
 # Generate README from the crate documentation
-pushd "tsp_http_client" >/dev/null
+pushd "tsp-http-client" >/dev/null
 cargo readme > README.md 
 cp README.md ../README.md
 popd >/dev/null
