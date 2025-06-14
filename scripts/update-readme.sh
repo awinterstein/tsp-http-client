@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-cd "$(dirname "$0")" # Make sure to be in the directory where the script is located
+cd "$(dirname "$0")/.." # Make sure to be in the main directory of the repository
 
 # Install the cargo readme plugin if it is not yet installed
 if ! cargo --list | grep -q readme; then cargo install cargo-readme; fi

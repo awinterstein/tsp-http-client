@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-cd "$(dirname "$0")" # Make sure to be in the directory where the script is located
+cd "$(dirname "$0")/.." # Make sure to be in the main directory of the repository
 
 # Ask for the version number of the release
 echo -n "Version: "
