@@ -11,7 +11,7 @@
 //!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // The URI of a timestamp authority (TSA) that supports RFC 3161 timestamps.
-//! let tsa_uri = "http://timestamp.sectigo.com/qualified";
+//! let tsa_uri = "http://timestamp.digicert.com";
 //!
 //! // The SHA-256 digest of the data to be timestamped (can also be different SHA lengths like SHA-512).
 //! let digest = "00e3261a6e0d79c329445acd540fb2b07187a0dcf6017065c8814010283ac67f";
@@ -20,7 +20,7 @@
 //! let timestamp = request_timestamp_for_digest(tsa_uri, digest)?;
 //!
 //! // The content of the timestamp response can be written to a file then for example.
-//! File::create("timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
+//! File::create("/tmp/timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
 //!
 //! // Or the date and time of the timestamp can be accessed.
 //! println!("Timestamped date and time: {}", timestamp.datetime()?);
@@ -37,7 +37,7 @@
 //!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // The URI of a timestamp authority (TSA) that supports RFC 3161 timestamps.
-//! let tsa_uri = "http://timestamp.sectigo.com/qualified";
+//! let tsa_uri = "http://timestamp.digicert.com";
 //!
 //! // The file that should be timestamped.
 //! let filename = "README.md";
@@ -46,7 +46,7 @@
 //! let timestamp = request_timestamp_for_file(tsa_uri, filename)?;
 //!
 //! // The content of the timestamp response can be written to a file then for example.
-//! File::create("timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
+//! File::create("/tmp/timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
 //!
 //! // Or the date and time of the timestamp can be accessed.
 //! println!("Timestamped date and time: {}", timestamp.datetime()?);
@@ -172,4 +172,53 @@ fn request_timestamp(
     timestamp.verify(&timestamp_request)?;
 
     Ok(timestamp)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use cmpv2::status::PkiStatus;
+    use der::Decode;
+
+    #[test]
+    fn timestamp_request_for_file_successful() {
+        // request the timestamp and expect a success response
+        let filename = "Cargo.toml";
+        let response =
+            request_timestamp_for_file("http://timestamp.digicert.com", filename).unwrap();
+
+        // the response should be a valid x509 timestamp message
+        let x509_response = x509_tsp::TimeStampResp::from_der(response.as_der_encoded()).unwrap();
+        assert_eq!(x509_response.status.status, PkiStatus::Accepted);
+
+        // the received date should be todays date
+        assert_eq!(
+            response.datetime().unwrap().date_naive(),
+            chrono::Utc::now().date_naive()
+        );
+    }
+
+    #[test]
+    fn timestamp_for_nonexistent_file_rejected() {
+        assert!(
+            request_timestamp_for_file("http://timestamp.sectigo.com/qualified", "nonexistent")
+                .err()
+                .unwrap()
+                .downcast_ref::<std::io::Error>()
+                .unwrap()
+                .kind()
+                == std::io::ErrorKind::NotFound
+        );
+    }
+
+    #[test]
+    fn timestamp_for_invalid_server_rejected() {
+        assert!(
+            request_timestamp_for_file("http://example.com", "Cargo.toml")
+                .err()
+                .unwrap()
+                .to_string()
+                == "http status: 403"
+        );
+    }
 }

@@ -10,7 +10,7 @@ The following code can be used, if you already have a SHA digest of the data you
 use tsp_http_client::request_timestamp_for_digest;
 
 // The URI of a timestamp authority (TSA) that supports RFC 3161 timestamps.
-let tsa_uri = "http://timestamp.sectigo.com/qualified";
+let tsa_uri = "http://timestamp.digicert.com";
 
 // The SHA-256 digest of the data to be timestamped (can also be different SHA lengths like SHA-512).
 let digest = "00e3261a6e0d79c329445acd540fb2b07187a0dcf6017065c8814010283ac67f";
@@ -19,7 +19,7 @@ let digest = "00e3261a6e0d79c329445acd540fb2b07187a0dcf6017065c8814010283ac67f";
 let timestamp = request_timestamp_for_digest(tsa_uri, digest)?;
 
 // The content of the timestamp response can be written to a file then for example.
-File::create("timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
+File::create("/tmp/timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
 
 // Or the date and time of the timestamp can be accessed.
 println!("Timestamped date and time: {}", timestamp.datetime()?);
@@ -31,7 +31,7 @@ Alternatively, the crate can calculate the digest on the content of a file:
 use tsp_http_client::request_timestamp_for_file;
 
 // The URI of a timestamp authority (TSA) that supports RFC 3161 timestamps.
-let tsa_uri = "http://timestamp.sectigo.com/qualified";
+let tsa_uri = "http://timestamp.digicert.com";
 
 // The file that should be timestamped.
 let filename = "README.md";
@@ -40,7 +40,7 @@ let filename = "README.md";
 let timestamp = request_timestamp_for_file(tsa_uri, filename)?;
 
 // The content of the timestamp response can be written to a file then for example.
-File::create("timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
+File::create("/tmp/timestamp-response.tsr")?.write_all(&timestamp.as_der_encoded())?;
 
 // Or the date and time of the timestamp can be accessed.
 println!("Timestamped date and time: {}", timestamp.datetime()?);
