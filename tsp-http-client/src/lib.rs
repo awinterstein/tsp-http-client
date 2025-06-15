@@ -72,7 +72,7 @@ use tsp::TimeStampRequest;
 pub use tsp::TimeStampResponse;
 
 /// Specific error values of the TSP HTTP client.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Error {
     /// The provided digest is none of SHA-224, SHA-256, SHA-384, or SHA-512.
     InvalidDigest,
