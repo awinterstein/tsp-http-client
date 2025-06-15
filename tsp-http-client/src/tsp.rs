@@ -130,6 +130,11 @@ impl TimeStampResponse {
             return Err(Box::new(crate::Error::InvalidServerResponse));
         }
 
+        // The nonce must match the one generated when the creating the query
+        if tst.nonce != *request.nonce() {
+            return Err(Box::new(crate::Error::InvalidServerResponse));
+        }
+
         // The hash algorithm must match the one used to create the query
         if tst.message_imprint.hash_algorithm.oid != *request.hash_algorithm() {
             return Err(Box::new(crate::Error::InvalidServerResponse));
