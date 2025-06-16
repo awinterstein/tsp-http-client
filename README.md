@@ -63,11 +63,16 @@ This repository also contains a command line application for requesting timestam
 ```
 Simple HTTP client for requesting timestamps from a timestamp authority (TSA) using the RFC 3161 standard
 
-Usage: tsp-http-client-cmd --output <OUTPUT> <--file <FILE>|--digest <DIGEST>>
+Usage: tsp-http-client-cmd [OPTIONS] <COMMAND>
+
+Commands:
+  digest  Request timestamp for the given SHA digest
+  file    Request timestamp for the given file
+  batch   Request timestamp for all files in the given directory
+  help    Print this message or the help of the given subcommand(s)
 
 Options:
-  -f, --file <FILE>      The filename of the data that should be timestamped. Either this or --digest is needed
-  -d, --digest <DIGEST>  The SHA digest of the data to be timestamped, represented as a hexadecimal string. Either this or --file is needed
-  -o, --output <OUTPUT>  The output file where the timestamp will be written in ASN.1 DER format
-  -h, --help             Print help
-  -V, --version          Print version
+      --tsa <TSA>  URI of the timestamp authority (TSA) to use [default: http://timestamp.sectigo.com/qualified]
+  -q, --quiet      Disables console output
+  -h, --help       Print help
+  -V, --version    Print version

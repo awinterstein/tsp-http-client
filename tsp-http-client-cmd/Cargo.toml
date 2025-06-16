@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 clap = { version = "4.5.37", features = ["derive"] }
 tsp-http-client = { path = "../tsp-http-client" }
+walkdir = "2.5.0"
