@@ -26,7 +26,7 @@ jobs:
         run: cargo test --verbose
       - name: Check for up-to-date readme
         run: |
-          ./scripts/update-readme.sh
+          ./update-readme.sh
           if [ ! -z "$(git status --untracked-files=no --porcelain)" ]; then
             echo "::warning::$(git status --untracked-files=no --porcelain)"
             echo "::error title=Changed files::There are changed files in the repository. Readme not up to date?"
