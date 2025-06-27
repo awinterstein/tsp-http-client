@@ -8,3 +8,8 @@ publish = false
 clap = { version = "4.5.37", features = ["derive"] }
 tsp-http-client = { path = "../tsp-http-client" }
 walkdir = "2.5.0"
+
+[dev-dependencies]
+assert_cmd = "2.0.14"
+predicates = "3.1.0"
+tempfile = "3.20.0"
